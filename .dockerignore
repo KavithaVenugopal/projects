@@ -1,0 +1,13 @@
+# Node modules
+node_modules/
+
+# Build files
+build/
+
+# Git files
+.git/
+.gitignore
+
+# Editor-specific files
+.vscode/
+
