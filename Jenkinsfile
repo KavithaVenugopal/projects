@@ -26,7 +26,7 @@ pipeline {
                 sh './build.sh'
 
                 // Log in to Docker Hub (public repository) using your credentials
-                withCredentials([usernamePassword(credentialsId: 'dockerhubuser', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'kavi-docker', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                     sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io"
                 }
 
@@ -47,7 +47,7 @@ pipeline {
                 sh './deploy.sh'
 
                 // Log in to Docker Hub (private repository) using your credentials
-                withCredentials([usernamePassword(credentialsId: 'dockerhubuser', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'kavi-docker', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                     sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io"
                 }
 
