@@ -1,21 +1,19 @@
 #!/bin/bash
 
-# Docker Hub repository information
-DOCKERHUB_REPO="kavitha06/prod_01"
-DOCKERHUB_USERNAME="kavitha06"
-DOCKERHUB_PASSWORD="dckr_pat_OvjajmTTJk4Vm16DWX9Uurclx-I"
+# Define the port you need for your application
+PORT=80
 
-# Log in to Docker Hub
-echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin docker.io
+# List all running containers
+CONTAINERS=$(docker ps -q)
 
-# List all images in the Docker Hub repository
-IMAGES=$(docker search "$DOCKERHUB_REPO" | awk '{if (NR!=1) {print $1}}')
-
-# Loop through and remove each image
-for IMAGE in $IMAGES; do
-    # Remove the image
-    docker rmi -f "$DOCKERHUB_REPO/$IMAGE"
+for CONTAINER in $CONTAINERS; do
+  # Check if the container is using the specified port
+  if docker port $CONTAINER | grep -qE "[0-9]+/tcp.*:$PORT"; then
+    # Stop the container
+    echo "Stopping container $CONTAINER to free up port $PORT"
+    docker stop $CONTAINER
+  fi
 done
 
-# Log out from Docker Hub
-docker logout
+# Run your deployment command here (e.g., docker-compose up)
+./deploy.sh
