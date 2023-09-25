@@ -1,60 +1,61 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKERHUB_PUBLIC_REPO = 'kavitha06/dev_01' // Public Docker Hub repository
-        DOCKERHUB_PRIVATE_REPO = 'kavitha06/prod_01' // Private Docker Hub repository
-    }
-
+    
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the repository
+                // Check out your source code from your Git repository
                 checkout scm
             }
         }
 
         stage('Build and Push Docker Image') {
             when {
-                branch 'dev' // Build and push only if code is pushed to the 'dev' branch
+                // Run this stage only if changes are pushed to the 'dev' branch
+                expression {
+                    currentBuild.branch == 'origin/dev'
+                }
             }
             steps {
-                // Grant executable permissions to the build script
-                sh 'chmod +x build.sh'
+                script {
+                    def dockerImage = 'kavitha06/kavitha001/react'
+                    def dockerHubCredentials = credentials('dockerhub-kavi')
 
-                // Build the Docker image using the build script
-                sh './build.sh'
+                    // Run your custom build script
+                    sh './build.sh'
 
-                // Log in to Docker Hub (public repository) using your credentials
-                withCredentials([usernamePassword(credentialsId: 'dockerhubuser', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                    sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io"
+                    // Log in to Docker Hub
+                    sh "docker login -u ${dockerHubCredentials.username} -p ${dockerHubCredentials.password}"
+
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${dockerImage}"
                 }
-
-                // Push the Docker image to the public Docker Hub repository
-                sh "docker push $DOCKERHUB_PUBLIC_REPO:$BUILD_NUMBER"
             }
         }
 
-        stage('Deploy to Private Repository') {
+        stage('Deploy') {
             when {
-                branch 'master' // Deploy to private repository when code is merged to 'master'
+                // Run this stage only if changes are pushed to the 'dev' branch
+                expression {
+                    currentBuild.branch == 'origin/dev'
+                }
             }
             steps {
-                // Grant executable permissions to the deploy script
-                sh 'chmod +x deploy.sh'
-
-                // Build and push the Docker image to the private Docker Hub repository
-                sh './deploy.sh'
-
-                // Log in to Docker Hub (private repository) using your credentials
-                withCredentials([usernamePassword(credentialsId: 'dockerhubuser', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                    sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io"
+                script {
+                    // Run your custom deploy script
+                    sh './deploy.sh'
                 }
-
-                // Push the Docker image to the private Docker Hub repository
-                sh "docker push $DOCKERHUB_PRIVATE_REPO:$BUILD_NUMBER"
             }
+        }
+        
+        // Add more stages for additional deployment or testing steps as needed
+    }
+    
+    post {
+        failure {
+            echo "pipeline failed"
         }
     }
 }
+
 
