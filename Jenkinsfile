@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_PUBLIC_REPO = 'kavitha06/dev_01' // Public Docker Hub repository
+        DOCKER_IMAGE_TAG = 'latest' // Customize the Docker image tag
     }
 
     stages {
@@ -26,8 +27,21 @@ pipeline {
                     sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io"
                 }
 
-                // Push the Docker image to the public Docker Hub repository
-                sh "docker push $DOCKERHUB_PUBLIC_REPO:$BUILD_NUMBER"
+                // Tag the Docker image with the customized tag
+                sh "docker tag kavitha001/react $DOCKERHUB_PUBLIC_REPO:$DOCKER_IMAGE_TAG"
+
+                // Push the Docker image to the public Docker Hub repository with the customized tag
+                sh "docker push $DOCKERHUB_PUBLIC_REPO:$DOCKER_IMAGE_TAG"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Grant executable permissions to the deploy script
+                sh 'chmod +x deploy.sh'
+
+                // Execute the deploy script to handle deployment
+                sh './deploy.sh'
             }
         }
     }
