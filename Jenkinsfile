@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_PUBLIC_REPO = 'kavitha06/dev_01' // Public Docker Hub repository
-           }
+    }
 
     stages {
         stage('Checkout') {
@@ -14,9 +14,6 @@ pipeline {
         }
 
         stage('Build and Push Docker Image') {
-            when {
-                branch 'dev' // Build and push only if code is pushed to the 'dev' branch
-            }
             steps {
                 // Grant executable permissions to the build script
                 sh 'chmod +x build.sh'
@@ -33,8 +30,6 @@ pipeline {
                 sh "docker push $DOCKERHUB_PUBLIC_REPO:$BUILD_NUMBER"
             }
         }
-
-        
     }
 }
 
