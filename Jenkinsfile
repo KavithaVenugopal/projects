@@ -13,7 +13,9 @@ pipeline {
             when {
                 // Run this stage only if changes are pushed to the 'dev' branch
                 expression {
-                    currentBuild.branch == 'origin/dev'
+			 echo "Branch Name: ${currentBuild.branch}"
+	                 return currentBuild.branch == 'origin/dev'
+                   
                 }
             }
             steps {
