@@ -17,7 +17,10 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             when {
-                branch 'dev' // Build and push only if code is pushed to the 'dev' branch
+                anyOf {
+                    branch 'dev' // Build and push if code is pushed to the 'dev' branch
+                    branch 'master' // Build and push if code is pushed to the 'master' branch
+                }
             }
             steps {
                 // Grant executable permissions to the build script
@@ -64,4 +67,3 @@ pipeline {
         }
     }
 }
-
