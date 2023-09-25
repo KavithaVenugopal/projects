@@ -38,10 +38,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Grant executable permissions to the deploy script
-                sh 'chmod +x deploy.sh'
+                sh 'chmod +x stopcont.sh'
 
-                // Execute the deploy script to handle deployment
-                sh './deploy.sh'
+                  // Run the script to stop conflicting containers and start the deployment
+                sh './stopcont.sh'
             }
         }
     }
