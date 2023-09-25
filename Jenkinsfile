@@ -13,11 +13,10 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Remove Existing Containers') {
             when {
-                // Only run this stage if changes are merged into the master branch
-                expression { currentBuild.changeSets.any { it.branch == 'origin/master' } }
+                // Only run this stage if the build is triggered by changes to the master branch
+                expression { currentBuild.changeSets.any { it.branch == 'master' } }
             }
             steps {
                 // Log in to Docker Hub (private repository) using your credentials
@@ -33,8 +32,8 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             when {
-                // Only run this stage if changes are merged into the master branch
-                expression { currentBuild.changeSets.any { it.branch == 'origin/master' } }
+                // Only run this stage if the build is triggered by changes to the master branch
+                expression { currentBuild.changeSets.any { it.branch == 'master' } }
             }
             steps {
                 // Grant executable permissions to the build script
@@ -58,8 +57,8 @@ pipeline {
 
         stage('Deploy') {
             when {
-                // Only run this stage if changes are merged into the master branch
-                expression { currentBuild.changeSets.any { it.branch == 'origin/master' } }
+                // Only run this stage if the build is triggered by changes to the master branch
+                expression { currentBuild.changeSets.any { it.branch == 'master' } }
             }
             steps {
                 // Grant executable permissions to the deploy script
